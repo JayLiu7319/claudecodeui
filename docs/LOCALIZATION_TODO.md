@@ -30,7 +30,7 @@
 | `CredentialsSettings.jsx` | ✅ | P3 - 凭据设置完全翻译 |
 | `Onboarding.jsx` | ✅ | P0 - Git配置、CLI认证流程完全翻译 |
 | `MainContent.jsx` | ✅ | P0 - 加载状态、空状态、标签页名称完全翻译 |
-| `ChatInterface.jsx` | ✅ | P0 - 聊天消息、工具调用提示、权限模式、加载状态完全翻译 |
+| `ChatInterface.jsx` | ✅ | P0 - 聊天消息、工具调用提示、权限模式、加载状态、AI 助手选择、模型选择、会话状态完全翻译 |
 | `ErrorBoundary.jsx` | ✅ | P1 - 错误提示和重试按钮完全翻译 |
 | `ProjectCreationWizard.jsx` | ✅ | P1 - 项目创建向导所有步骤完全翻译 |
 | `TaskList.jsx` | ✅ | P1 - 任务列表、筛选器、状态标签完全翻译 |

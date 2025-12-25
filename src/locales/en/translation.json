@@ -346,7 +346,23 @@
             "bashConfirm": "This command contains bash commands that will be executed. Do you want to proceed?",
             "cancelled": "❌ Command execution cancelled",
             "error": "Error executing command: {{message}}"
-        }
+        },
+        "selectProjectToChat": "Select a project to start chatting with Claude",
+        "loadingSessionMessages": "Loading session messages...",
+        "chooseAssistant": "Choose Your AI Assistant",
+        "chooseAssistantDesc": "Select a provider to start a new conversation",
+        "providerClaude": "Claude",
+        "providerClaudeDesc": "by Anthropic",
+        "providerCursor": "Cursor",
+        "providerCursorDesc": "AI Code Editor",
+        "selectModel": "Select Model",
+        "readyToUse": "Ready to use {{provider}} with {{model}}. Start typing your message below.",
+        "selectProviderAbove": "Select a provider above to begin",
+        "continueConversation": "Continue your conversation",
+        "continueConversationDesc": "Ask questions about your code, request changes, or get help with development tasks",
+        "loadingOlderMessages": "Loading older messages...",
+        "showingMessages": "Showing {{current}} of {{total}} messages",
+        "scrollUpToLoadMore": "Scroll up to load more"
     },
     "errors": {
         "connectionFailed": "Connection failed",
@@ -392,6 +408,8 @@
         "tipDesktop": "Create a new project by clicking the folder icon in the sidebar",
         "newSession": "New Session",
         "untitledSession": "Untitled Session",
+        "chat": "Chat",
+        "shell": "Shell",
         "projectFiles": "Project Files",
         "sourceControl": "Source Control",
         "taskMaster": "TaskMaster"

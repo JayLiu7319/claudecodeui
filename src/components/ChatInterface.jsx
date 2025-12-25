@@ -4160,7 +4160,7 @@ function ChatInterface({ selectedProject, selectedSession, ws, sendMessage, mess
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-center text-gray-500 dark:text-gray-400">
-          <p>Select a project to start chatting with Claude</p>
+          <p>{t('chat.selectProjectToChat')}</p>
         </div>
       </div>
     );
@@ -4185,16 +4185,16 @@ function ChatInterface({ selectedProject, selectedSession, ws, sendMessage, mess
             <div className="text-center text-gray-500 dark:text-gray-400 mt-8">
               <div className="flex items-center justify-center space-x-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400"></div>
-                <p>Loading session messages...</p>
+                <p>{t('chat.loadingSessionMessages')}</p>
               </div>
             </div>
           ) : chatMessages.length === 0 ? (
             <div className="flex items-center justify-center h-full">
               {!selectedSession && !currentSessionId && (
                 <div className="text-center px-6 sm:px-4 py-8">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Choose Your AI Assistant</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">{t('chat.chooseAssistant')}</h2>
                   <p className="text-gray-600 dark:text-gray-400 mb-8">
-                    Select a provider to start a new conversation
+                    {t('chat.chooseAssistantDesc')}
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
@@ -4214,8 +4214,8 @@ function ChatInterface({ selectedProject, selectedSession, ws, sendMessage, mess
                       <div className="flex flex-col items-center justify-center h-full gap-3">
                         <ClaudeLogo className="w-10 h-10" />
                         <div>
-                          <p className="font-semibold text-gray-900 dark:text-white">Claude</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">by Anthropic</p>
+                          <p className="font-semibold text-gray-900 dark:text-white">{t('chat.providerClaude')}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{t('chat.providerClaudeDesc')}</p>
                         </div>
                       </div>
                       {provider === 'claude' && (
@@ -4245,8 +4245,8 @@ function ChatInterface({ selectedProject, selectedSession, ws, sendMessage, mess
                       <div className="flex flex-col items-center justify-center h-full gap-3">
                         <CursorLogo className="w-10 h-10" />
                         <div>
-                          <p className="font-semibold text-gray-900 dark:text-white">Cursor</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">AI Code Editor</p>
+                          <p className="font-semibold text-gray-900 dark:text-white">{t('chat.providerCursor')}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{t('chat.providerCursorDesc')}</p>
                         </div>
                       </div>
                       {provider === 'cursor' && (
@@ -4264,7 +4264,7 @@ function ChatInterface({ selectedProject, selectedSession, ws, sendMessage, mess
                   {/* Model Selection - Always reserve space to prevent jumping */}
                   <div className={`mb-6 transition-opacity duration-200 ${provider ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Select Model
+                      {t('chat.selectModel')}
                     </label>
                     {provider === 'claude' ? (
                       <select
@@ -4316,10 +4316,10 @@ function ChatInterface({ selectedProject, selectedSession, ws, sendMessage, mess
 
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     {provider === 'claude'
-                      ? `Ready to use Claude with ${claudeModel}. Start typing your message below.`
+                      ? t('chat.readyToUse', { provider: 'Claude', model: claudeModel })
                       : provider === 'cursor'
-                        ? `Ready to use Cursor with ${cursorModel}. Start typing your message below.`
-                        : 'Select a provider above to begin'
+                        ? t('chat.readyToUse', { provider: 'Cursor', model: cursorModel })
+                        : t('chat.selectProviderAbove')
                     }
                   </p>
 
@@ -4336,9 +4336,9 @@ function ChatInterface({ selectedProject, selectedSession, ws, sendMessage, mess
               )}
               {selectedSession && (
                 <div className="text-center text-gray-500 dark:text-gray-400 px-6 sm:px-4">
-                  <p className="font-bold text-lg sm:text-xl mb-3">Continue your conversation</p>
+                  <p className="font-bold text-lg sm:text-xl mb-3">{t('chat.continueConversation')}</p>
                   <p className="text-sm sm:text-base leading-relaxed">
-                    Ask questions about your code, request changes, or get help with development tasks
+                    {t('chat.continueConversationDesc')}
                   </p>
 
                   {/* Show NextTaskBanner for existing sessions too, only if TaskMaster is installed */}
@@ -4360,7 +4360,7 @@ function ChatInterface({ selectedProject, selectedSession, ws, sendMessage, mess
                 <div className="text-center text-gray-500 dark:text-gray-400 py-3">
                   <div className="flex items-center justify-center space-x-2">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400"></div>
-                    <p className="text-sm">Loading older messages...</p>
+                    <p className="text-sm">{t('chat.loadingOlderMessages')}</p>
                   </div>
                 </div>
               )}
@@ -4370,8 +4370,8 @@ function ChatInterface({ selectedProject, selectedSession, ws, sendMessage, mess
                 <div className="text-center text-gray-500 dark:text-gray-400 text-sm py-2 border-b border-gray-200 dark:border-gray-700">
                   {totalMessages > 0 && (
                     <span>
-                      Showing {sessionMessages.length} of {totalMessages} messages •
-                      <span className="text-xs">Scroll up to load more</span>
+                      {t('chat.showingMessages', { current: sessionMessages.length, total: totalMessages })} •
+                      <span className="text-xs">{t('chat.scrollUpToLoadMore')}</span>
                     </span>
                   )}
                 </div>

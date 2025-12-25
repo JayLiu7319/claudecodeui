@@ -354,6 +354,10 @@ function AppContent() {
   const handleProjectSelect = (project) => {
     setSelectedProject(project);
     setSelectedSession(null);
+    // Switch to files tab when selecting a project (unless on git/tasks/shell tab)
+    if (activeTab === 'chat' || activeTab === 'preview') {
+      setActiveTab('files');
+    }
     navigate('/');
     if (isMobile) {
       setSidebarOpen(false);

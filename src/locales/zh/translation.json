@@ -346,7 +346,23 @@
             "bashConfirm": "此命令包含将要执行的 bash 命令。是否继续？",
             "cancelled": "❌ 命令执行已取消",
             "error": "执行命令时出错：{{message}}"
-        }
+        },
+        "selectProjectToChat": "选择项目以开始与 Claude 对话",
+        "loadingSessionMessages": "加载会话消息中...",
+        "chooseAssistant": "选择您的 AI 助手",
+        "chooseAssistantDesc": "选择一个提供商开始新对话",
+        "providerClaude": "Claude",
+        "providerClaudeDesc": "由 Anthropic 提供",
+        "providerCursor": "Cursor",
+        "providerCursorDesc": "AI 代码编辑器",
+        "selectModel": "选择模型",
+        "readyToUse": "准备使用 {{provider}}（模型：{{model}}）。在下方开始输入消息。",
+        "selectProviderAbove": "选择上方的提供商以开始",
+        "continueConversation": "继续您的对话",
+        "continueConversationDesc": "询问有关代码的问题、请求更改或获取开发任务帮助",
+        "loadingOlderMessages": "加载更早的消息中...",
+        "showingMessages": "显示 {{current}} / {{total}} 条消息",
+        "scrollUpToLoadMore": "向上滚动以加载更多"
     },
     "errors": {
         "connectionFailed": "连接失败",
@@ -392,6 +408,8 @@
         "tipDesktop": "点击侧边栏的文件夹图标创建新项目",
         "newSession": "新会话",
         "untitledSession": "未命名会话",
+        "chat": "对话",
+        "shell": "终端",
         "projectFiles": "项目文件",
         "sourceControl": "源代码管理",
         "taskMaster": "TaskMaster"

@@ -43,6 +43,17 @@ const formatTimeAgo = (dateString, currentTime) => {
   return date.toLocaleDateString();
 };
 
+// Helper function to render formatted time with i18n support
+const renderFormattedTime = (timeResult, t) => {
+  if (typeof timeResult === 'string') {
+    return timeResult;
+  }
+  if (timeResult && typeof timeResult === 'object' && timeResult.key) {
+    return t(timeResult.key, { count: timeResult.count });
+  }
+  return 'Unknown';
+};
+
 function Sidebar({
   projects,
   selectedProject,
@@ -1073,7 +1084,7 @@ function Sidebar({
                                         <div className="flex items-center gap-1 mt-0.5">
                                           <Clock className="w-2.5 h-2.5 text-muted-foreground" />
                                           <span className="text-xs text-muted-foreground">
-                                            {formatTimeAgo(sessionTime, currentTime)}
+                                            {renderFormattedTime(formatTimeAgo(sessionTime, currentTime), t)}
                                           </span>
                                           {messageCount > 0 && (
                                             <Badge variant="secondary" className="text-xs px-1 py-0 ml-auto">
@@ -1131,7 +1142,7 @@ function Sidebar({
                                         <div className="flex items-center gap-1 mt-0.5">
                                           <Clock className="w-2.5 h-2.5 text-muted-foreground" />
                                           <span className="text-xs text-muted-foreground">
-                                            {formatTimeAgo(sessionTime, currentTime)}
+                                            {renderFormattedTime(formatTimeAgo(sessionTime, currentTime), t)}
                                           </span>
                                           {messageCount > 0 && (
                                             <Badge variant="secondary" className="text-xs px-1 py-0 ml-auto">
