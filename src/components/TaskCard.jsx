@@ -2,13 +2,16 @@ import React from 'react';
 import { Clock, CheckCircle, Circle, AlertCircle, Pause, X, ArrowRight, ChevronUp, Minus, Flag } from 'lucide-react';
 import { cn } from '../lib/utils';
 import Tooltip from './Tooltip';
+import { useTranslation } from 'react-i18next';
 
-const TaskCard = ({ 
+const TaskCard = ({
   task,
   onClick,
   showParent = false,
   className = ''
 }) => {
+  const { t } = useTranslation();
+
   const getStatusConfig = (status) => {
     switch (status) {
       case 'done':
@@ -18,9 +21,9 @@ const TaskCard = ({
           borderColor: 'border-green-200 dark:border-green-800',
           iconColor: 'text-green-600 dark:text-green-400',
           textColor: 'text-green-900 dark:text-green-100',
-          statusText: 'Done'
+          statusText: t('tasks.done')
         };
-      
+
       case 'in-progress':
         return {
           icon: Clock,
@@ -28,9 +31,9 @@ const TaskCard = ({
           borderColor: 'border-blue-200 dark:border-blue-800',
           iconColor: 'text-blue-600 dark:text-blue-400',
           textColor: 'text-blue-900 dark:text-blue-100',
-          statusText: 'In Progress'
+          statusText: t('tasks.inProgress')
         };
-      
+
       case 'review':
         return {
           icon: AlertCircle,
@@ -38,9 +41,9 @@ const TaskCard = ({
           borderColor: 'border-amber-200 dark:border-amber-800',
           iconColor: 'text-amber-600 dark:text-amber-400',
           textColor: 'text-amber-900 dark:text-amber-100',
-          statusText: 'Review'
+          statusText: t('tasks.review')
         };
-      
+
       case 'deferred':
         return {
           icon: Pause,
@@ -48,9 +51,9 @@ const TaskCard = ({
           borderColor: 'border-gray-200 dark:border-gray-700',
           iconColor: 'text-gray-500 dark:text-gray-400',
           textColor: 'text-gray-700 dark:text-gray-300',
-          statusText: 'Deferred'
+          statusText: t('tasks.deferred')
         };
-      
+
       case 'cancelled':
         return {
           icon: X,
@@ -58,9 +61,9 @@ const TaskCard = ({
           borderColor: 'border-red-200 dark:border-red-800',
           iconColor: 'text-red-600 dark:text-red-400',
           textColor: 'text-red-900 dark:text-red-100',
-          statusText: 'Cancelled'
+          statusText: t('tasks.cancelled')
         };
-      
+
       case 'pending':
       default:
         return {
@@ -69,7 +72,7 @@ const TaskCard = ({
           borderColor: 'border-slate-200 dark:border-slate-700',
           iconColor: 'text-slate-500 dark:text-slate-400',
           textColor: 'text-slate-900 dark:text-slate-100',
-          statusText: 'Pending'
+          statusText: t('tasks.pending')
         };
     }
   };
@@ -81,7 +84,7 @@ const TaskCard = ({
     switch (priority) {
       case 'high':
         return (
-          <Tooltip content="High Priority">
+          <Tooltip content={t('tasks.highPriority')}>
             <div className="w-4 h-4 bg-red-100 dark:bg-red-900/30 rounded flex items-center justify-center">
               <ChevronUp className="w-2.5 h-2.5 text-red-600 dark:text-red-400" />
             </div>
@@ -89,7 +92,7 @@ const TaskCard = ({
         );
       case 'medium':
         return (
-          <Tooltip content="Medium Priority">
+          <Tooltip content={t('tasks.mediumPriority')}>
             <div className="w-4 h-4 bg-amber-100 dark:bg-amber-900/30 rounded flex items-center justify-center">
               <Minus className="w-2.5 h-2.5 text-amber-600 dark:text-amber-400" />
             </div>
@@ -97,7 +100,7 @@ const TaskCard = ({
         );
       case 'low':
         return (
-          <Tooltip content="Low Priority">
+          <Tooltip content={t('tasks.lowPriority')}>
             <div className="w-4 h-4 bg-blue-100 dark:bg-blue-900/30 rounded flex items-center justify-center">
               <Circle className="w-1.5 h-1.5 text-blue-600 dark:text-blue-400 fill-current" />
             </div>
@@ -105,7 +108,7 @@ const TaskCard = ({
         );
       default:
         return (
-          <Tooltip content="No Priority Set">
+          <Tooltip content={t('tasks.noPrioritySet')}>
             <div className="w-4 h-4 bg-gray-100 dark:bg-gray-800 rounded flex items-center justify-center">
               <Circle className="w-1.5 h-1.5 text-gray-400 dark:text-gray-500" />
             </div>
@@ -130,7 +133,7 @@ const TaskCard = ({
         {/* Task ID and Title */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <Tooltip content={`Task ID: ${task.id}`}>
+            <Tooltip content={t('tasks.taskId', { id: task.id })}>
               <span className="text-xs font-mono text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">
                 {task.id}
               </span>
@@ -141,11 +144,11 @@ const TaskCard = ({
           </h3>
           {showParent && task.parentId && (
             <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-              Task {task.parentId}
+              {t('tasks.task', { id: task.parentId })}
             </span>
           )}
         </div>
-        
+
         {/* Priority Icon */}
         <div className="flex-shrink-0">
           {getPriorityIcon(task.priority)}
@@ -157,17 +160,17 @@ const TaskCard = ({
         {/* Dependencies */}
         <div className="flex items-center">
           {task.dependencies && Array.isArray(task.dependencies) && task.dependencies.length > 0 && (
-            <Tooltip content={`Depends on: ${task.dependencies.map(dep => `Task ${dep}`).join(', ')}`}>
+            <Tooltip content={t('tasks.dependsOn', { deps: task.dependencies.map(dep => t('tasks.task', { id: dep })).join(', ') })}>
               <div className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
                 <ArrowRight className="w-3 h-3" />
-                <span>Depends on: {task.dependencies.join(', ')}</span>
+                <span>{t('tasks.dependsOn', { deps: task.dependencies.join(', ') })}</span>
               </div>
             </Tooltip>
           )}
         </div>
 
         {/* Status Badge */}
-        <Tooltip content={`Status: ${config.statusText}`}>
+        <Tooltip content={t('tasks.statusWithValue', { status: config.statusText })}>
           <div className="flex items-center gap-1">
             <div className={cn('w-2 h-2 rounded-full', config.iconColor.replace('text-', 'bg-'))} />
             <span className={cn('text-xs font-medium', config.textColor)}>
@@ -181,10 +184,10 @@ const TaskCard = ({
       {task.subtasks && task.subtasks.length > 0 && (
         <div className="ml-3">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs text-gray-500 dark:text-gray-400">Progress:</span>
-            <Tooltip content={`${task.subtasks.filter(st => st.status === 'done').length} of ${task.subtasks.length} subtasks completed`}>
+            <span className="text-xs text-gray-500 dark:text-gray-400">{t('tasks.progress')}:</span>
+            <Tooltip content={t('tasks.subtasksCompleted', { done: task.subtasks.filter(st => st.status === 'done').length, total: task.subtasks.length })}>
               <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-                <div 
+                <div
                   className={cn(
                     'h-full rounded-full transition-all duration-300',
                     task.status === 'done' ? 'bg-green-500' : 'bg-blue-500'
@@ -195,7 +198,7 @@ const TaskCard = ({
                 />
               </div>
             </Tooltip>
-            <Tooltip content={`${task.subtasks.filter(st => st.status === 'done').length} completed, ${task.subtasks.filter(st => st.status === 'pending').length} pending, ${task.subtasks.filter(st => st.status === 'in-progress').length} in progress`}>
+            <Tooltip content={t('tasks.subtasksProgress', { done: task.subtasks.filter(st => st.status === 'done').length, pending: task.subtasks.filter(st => st.status === 'pending').length, inProgress: task.subtasks.filter(st => st.status === 'in-progress').length })}>
               <span className="text-xs text-gray-500 dark:text-gray-400">
                 {task.subtasks.filter(st => st.status === 'done').length}/{task.subtasks.length}
               </span>

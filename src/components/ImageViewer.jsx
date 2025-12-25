@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from './ui/button';
 import { X } from 'lucide-react';
 import { authenticatedFetch } from '../utils/api';
 
 function ImageViewer({ file, onClose }) {
+  const { t } = useTranslation();
   const imagePath = `/api/projects/${file.projectName}/files/content?path=${encodeURIComponent(file.path)}`;
   const [imageUrl, setImageUrl] = useState(null);
   const [error, setError] = useState(null);
@@ -35,7 +37,7 @@ function ImageViewer({ file, onClose }) {
           return;
         }
         console.error('Error loading image:', err);
-        setError('Unable to load image');
+        setError(t('imageViewer.unableToLoadImage'));
       } finally {
         setLoading(false);
       }
@@ -49,7 +51,7 @@ function ImageViewer({ file, onClose }) {
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [imagePath]);
+  }, [imagePath, t]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -71,7 +73,7 @@ function ImageViewer({ file, onClose }) {
         <div className="p-4 flex justify-center items-center bg-gray-50 dark:bg-gray-900 min-h-[400px]">
           {loading && (
             <div className="text-center text-gray-500 dark:text-gray-400">
-              <p>Loading image…</p>
+              <p>{t('imageViewer.loadingImage')}</p>
             </div>
           )}
           {!loading && imageUrl && (
@@ -83,7 +85,7 @@ function ImageViewer({ file, onClose }) {
           )}
           {!loading && !imageUrl && (
             <div className="text-center text-gray-500 dark:text-gray-400">
-              <p>{error || 'Unable to load image'}</p>
+              <p>{error || t('imageViewer.unableToLoadImage')}</p>
               <p className="text-sm mt-2 break-all">{file.path}</p>
             </div>
           )}

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import { WebglAddon } from '@xterm/addon-webgl';
@@ -34,6 +35,8 @@ function Shell({ selectedProject, selectedSession, initialCommand, isPlainShell 
   const [isRestarting, setIsRestarting] = useState(false);
   const [lastSessionId, setLastSessionId] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
+
+  const { t } = useTranslation();
 
   const selectedProjectRef = useRef(selectedProject);
   const selectedSessionRef = useRef(selectedSession);
@@ -296,7 +299,7 @@ function Shell({ selectedProject, selectedSession, initialCommand, isPlainShell 
               data: text
             }));
           }
-        }).catch(() => {});
+        }).catch(() => { });
         return false;
       }
 
@@ -375,8 +378,8 @@ function Shell({ selectedProject, selectedSession, initialCommand, isPlainShell 
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold mb-2">Select a Project</h3>
-          <p>Choose a project to open an interactive shell in that directory</p>
+          <h3 className="text-lg font-semibold mb-2">{t('shell.selectProject')}</h3>
+          <p>{t('shell.selectProjectDesc')}</p>
         </div>
       </div>
     );
@@ -402,13 +405,13 @@ function Shell({ selectedProject, selectedSession, initialCommand, isPlainShell 
               </span>
             )}
             {!selectedSession && (
-              <span className="text-xs text-gray-400">(New Session)</span>
+              <span className="text-xs text-gray-400">{t('shell.newSession')}</span>
             )}
             {!isInitialized && (
-              <span className="text-xs text-yellow-400">(Initializing...)</span>
+              <span className="text-xs text-yellow-400">{t('shell.initializing')}</span>
             )}
             {isRestarting && (
-              <span className="text-xs text-blue-400">(Restarting...)</span>
+              <span className="text-xs text-blue-400">{t('shell.restarting')}</span>
             )}
           </div>
           <div className="flex items-center space-x-3">
@@ -416,12 +419,12 @@ function Shell({ selectedProject, selectedSession, initialCommand, isPlainShell 
               <button
                 onClick={disconnectFromShell}
                 className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 flex items-center space-x-1"
-                title="Disconnect from shell"
+                title={t('shell.disconnectTitle')}
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
-                <span>Disconnect</span>
+                <span>{t('shell.disconnect')}</span>
               </button>
             )}
 
@@ -429,12 +432,12 @@ function Shell({ selectedProject, selectedSession, initialCommand, isPlainShell 
               onClick={restartShell}
               disabled={isRestarting || isConnected}
               className="text-xs text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1"
-              title="Restart Shell (disconnect first)"
+              title={t('shell.restartTitle')}
             >
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
-              <span>Restart</span>
+              <span>{t('shell.restart')}</span>
             </button>
           </div>
         </div>
@@ -445,7 +448,7 @@ function Shell({ selectedProject, selectedSession, initialCommand, isPlainShell 
 
         {!isInitialized && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-90">
-            <div className="text-white">Loading terminal...</div>
+            <div className="text-white">{t('shell.loadingTerminal')}</div>
           </div>
         )}
 
@@ -455,19 +458,19 @@ function Shell({ selectedProject, selectedSession, initialCommand, isPlainShell 
               <button
                 onClick={connectToShell}
                 className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2 text-base font-medium w-full sm:w-auto"
-                title="Connect to shell"
+                title={t('shell.connectToShell')}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                <span>Continue in Shell</span>
+                <span>{t('shell.continueInShell')}</span>
               </button>
               <p className="text-gray-400 text-sm mt-3 px-2">
                 {isPlainShell ?
-                  `Run ${initialCommand || 'command'} in ${selectedProject.displayName}` :
+                  t('shell.runCommandIn', { command: initialCommand || 'command', project: selectedProject.displayName }) :
                   selectedSession ?
-                    `Resume session: ${sessionDisplayNameLong}...` :
-                    'Start a new Claude session'
+                    t('shell.resumeSession', { session: sessionDisplayNameLong }) :
+                    t('shell.startNewSession')
                 }
               </p>
             </div>
@@ -479,12 +482,12 @@ function Shell({ selectedProject, selectedSession, initialCommand, isPlainShell 
             <div className="text-center max-w-sm w-full">
               <div className="flex items-center justify-center space-x-3 text-yellow-400">
                 <div className="w-6 h-6 animate-spin rounded-full border-2 border-yellow-400 border-t-transparent"></div>
-                <span className="text-base font-medium">Connecting to shell...</span>
+                <span className="text-base font-medium">{t('shell.connectingToShell')}</span>
               </div>
               <p className="text-gray-400 text-sm mt-3 px-2">
                 {isPlainShell ?
-                  `Running ${initialCommand || 'command'} in ${selectedProject.displayName}` :
-                  `Starting Claude CLI in ${selectedProject.displayName}`
+                  t('shell.runningCommand', { command: initialCommand || 'command', project: selectedProject.displayName }) :
+                  t('shell.startingCLI', { project: selectedProject.displayName })
                 }
               </p>
             </div>

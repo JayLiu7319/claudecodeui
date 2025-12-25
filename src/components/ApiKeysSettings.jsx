@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Key, Plus, Trash2, Eye, EyeOff, Copy, Check, Github } from 'lucide-react';
 import { authenticatedFetch } from '../utils/api';
 
 function ApiKeysSettings() {
+  const { t } = useTranslation();
   const [apiKeys, setApiKeys] = useState([]);
   const [githubTokens, setGithubTokens] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +65,7 @@ function ApiKeysSettings() {
   };
 
   const deleteApiKey = async (keyId) => {
-    if (!confirm('Are you sure you want to delete this API key?')) return;
+    if (!confirm(t('settings.apiKeys.deleteConfirm'))) return;
 
     try {
       await authenticatedFetch(`/api/settings/api-keys/${keyId}`, {
@@ -113,7 +115,7 @@ function ApiKeysSettings() {
   };
 
   const deleteGithubToken = async (tokenId) => {
-    if (!confirm('Are you sure you want to delete this GitHub token?')) return;
+    if (!confirm(t('settings.githubTokens.deleteConfirm'))) return;
 
     try {
       await authenticatedFetch(`/api/settings/credentials/${tokenId}`, {
@@ -144,7 +146,7 @@ function ApiKeysSettings() {
   };
 
   if (loading) {
-    return <div className="text-muted-foreground">Loading...</div>;
+    return <div className="text-muted-foreground">{t('common.loading')}</div>;
   }
 
   return (
@@ -152,9 +154,9 @@ function ApiKeysSettings() {
       {/* New API Key Alert */}
       {newlyCreatedKey && (
         <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-          <h4 className="font-semibold text-yellow-500 mb-2">⚠️ Save Your API Key</h4>
+          <h4 className="font-semibold text-yellow-500 mb-2">{t('settings.apiKeys.saveKeyAlert')}</h4>
           <p className="text-sm text-muted-foreground mb-3">
-            This is the only time you'll see this key. Store it securely.
+            {t('settings.apiKeys.saveKeyDescription')}
           </p>
           <div className="flex items-center gap-2">
             <code className="flex-1 px-3 py-2 bg-background/50 rounded font-mono text-sm break-all">
@@ -174,7 +176,7 @@ function ApiKeysSettings() {
             className="mt-3"
             onClick={() => setNewlyCreatedKey(null)}
           >
-            I've saved it
+            {t('settings.apiKeys.keySaved')}
           </Button>
         </div>
       )}
@@ -184,33 +186,33 @@ function ApiKeysSettings() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Key className="h-5 w-5" />
-            <h3 className="text-lg font-semibold">API Keys</h3>
+            <h3 className="text-lg font-semibold">{t('settings.apiKeys.title')}</h3>
           </div>
           <Button
             size="sm"
             onClick={() => setShowNewKeyForm(!showNewKeyForm)}
           >
             <Plus className="h-4 w-4 mr-1" />
-            New API Key
+            {t('settings.apiKeys.newApiKey')}
           </Button>
         </div>
 
         <p className="text-sm text-muted-foreground mb-4">
-          Generate API keys to access the external API from other applications.
+          {t('settings.apiKeys.description')}
         </p>
 
         {showNewKeyForm && (
           <div className="mb-4 p-4 border rounded-lg bg-card">
             <Input
-              placeholder="API Key Name (e.g., Production Server)"
+              placeholder={t('settings.apiKeys.keyNamePlaceholder')}
               value={newKeyName}
               onChange={(e) => setNewKeyName(e.target.value)}
               className="mb-2"
             />
             <div className="flex gap-2">
-              <Button onClick={createApiKey}>Create</Button>
+              <Button onClick={createApiKey}>{t('settings.apiKeys.create')}</Button>
               <Button variant="outline" onClick={() => setShowNewKeyForm(false)}>
-                Cancel
+                {t('common.cancel')}
               </Button>
             </div>
           </div>
@@ -218,7 +220,7 @@ function ApiKeysSettings() {
 
         <div className="space-y-2">
           {apiKeys.length === 0 ? (
-            <p className="text-sm text-muted-foreground italic">No API keys created yet.</p>
+            <p className="text-sm text-muted-foreground italic">{t('settings.apiKeys.noKeysCreated')}</p>
           ) : (
             apiKeys.map((key) => (
               <div
@@ -229,8 +231,8 @@ function ApiKeysSettings() {
                   <div className="font-medium">{key.key_name}</div>
                   <code className="text-xs text-muted-foreground">{key.api_key}</code>
                   <div className="text-xs text-muted-foreground mt-1">
-                    Created: {new Date(key.created_at).toLocaleDateString()}
-                    {key.last_used && ` • Last used: ${new Date(key.last_used).toLocaleDateString()}`}
+                    {t('settings.apiKeys.created')} {new Date(key.created_at).toLocaleDateString()}
+                    {key.last_used && ` • ${t('settings.apiKeys.lastUsed')} ${new Date(key.last_used).toLocaleDateString()}`}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -239,7 +241,7 @@ function ApiKeysSettings() {
                     variant={key.is_active ? 'outline' : 'secondary'}
                     onClick={() => toggleApiKey(key.id, key.is_active)}
                   >
-                    {key.is_active ? 'Active' : 'Inactive'}
+                    {key.is_active ? t('settings.apiKeys.active') : t('settings.apiKeys.inactive')}
                   </Button>
                   <Button
                     size="sm"
@@ -260,25 +262,25 @@ function ApiKeysSettings() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Github className="h-5 w-5" />
-            <h3 className="text-lg font-semibold">GitHub Tokens</h3>
+            <h3 className="text-lg font-semibold">{t('settings.githubTokens.title')}</h3>
           </div>
           <Button
             size="sm"
             onClick={() => setShowNewTokenForm(!showNewTokenForm)}
           >
             <Plus className="h-4 w-4 mr-1" />
-            Add Token
+            {t('settings.githubTokens.addToken')}
           </Button>
         </div>
 
         <p className="text-sm text-muted-foreground mb-4">
-          Add GitHub Personal Access Tokens to clone private repositories via the external API.
+          {t('settings.githubTokens.description')}
         </p>
 
         {showNewTokenForm && (
           <div className="mb-4 p-4 border rounded-lg bg-card">
             <Input
-              placeholder="Token Name (e.g., Personal Repos)"
+              placeholder={t('settings.githubTokens.tokenNamePlaceholder')}
               value={newTokenName}
               onChange={(e) => setNewTokenName(e.target.value)}
               className="mb-2"
@@ -286,7 +288,7 @@ function ApiKeysSettings() {
             <div className="relative">
               <Input
                 type={showToken['new'] ? 'text' : 'password'}
-                placeholder="GitHub Personal Access Token (ghp_...)"
+                placeholder={t('settings.githubTokens.tokenValuePlaceholder')}
                 value={newGithubToken}
                 onChange={(e) => setNewGithubToken(e.target.value)}
                 className="mb-2 pr-10"
@@ -300,13 +302,13 @@ function ApiKeysSettings() {
               </button>
             </div>
             <div className="flex gap-2">
-              <Button onClick={createGithubToken}>Add Token</Button>
+              <Button onClick={createGithubToken}>{t('settings.githubTokens.addToken')}</Button>
               <Button variant="outline" onClick={() => {
                 setShowNewTokenForm(false);
                 setNewTokenName('');
                 setNewGithubToken('');
               }}>
-                Cancel
+                {t('common.cancel')}
               </Button>
             </div>
           </div>
@@ -314,7 +316,7 @@ function ApiKeysSettings() {
 
         <div className="space-y-2">
           {githubTokens.length === 0 ? (
-            <p className="text-sm text-muted-foreground italic">No GitHub tokens added yet.</p>
+            <p className="text-sm text-muted-foreground italic">{t('settings.githubTokens.noTokensAdded')}</p>
           ) : (
             githubTokens.map((token) => (
               <div
@@ -324,7 +326,7 @@ function ApiKeysSettings() {
                 <div className="flex-1">
                   <div className="font-medium">{token.credential_name}</div>
                   <div className="text-xs text-muted-foreground mt-1">
-                    Added: {new Date(token.created_at).toLocaleDateString()}
+                    {t('settings.githubTokens.added')} {new Date(token.created_at).toLocaleDateString()}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -333,7 +335,7 @@ function ApiKeysSettings() {
                     variant={token.is_active ? 'outline' : 'secondary'}
                     onClick={() => toggleGithubToken(token.id, token.is_active)}
                   >
-                    {token.is_active ? 'Active' : 'Inactive'}
+                    {token.is_active ? t('settings.apiKeys.active') : t('settings.apiKeys.inactive')}
                   </Button>
                   <Button
                     size="sm"
@@ -351,9 +353,9 @@ function ApiKeysSettings() {
 
       {/* Documentation Link */}
       <div className="p-4 bg-muted/50 rounded-lg">
-        <h4 className="font-semibold mb-2">External API Documentation</h4>
+        <h4 className="font-semibold mb-2">{t('settings.externalApi.title')}</h4>
         <p className="text-sm text-muted-foreground mb-3">
-          Learn how to use the external API to trigger Claude/Cursor sessions from your applications.
+          {t('settings.externalApi.description')}
         </p>
         <a
           href="/EXTERNAL_API.md"
@@ -361,7 +363,7 @@ function ApiKeysSettings() {
           rel="noopener noreferrer"
           className="text-sm text-primary hover:underline"
         >
-          View API Documentation →
+          {t('settings.externalApi.viewDocs')}
         </a>
       </div>
     </div>

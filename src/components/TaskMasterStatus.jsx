@@ -1,22 +1,24 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTaskMaster } from '../contexts/TaskMasterContext';
 import TaskIndicator from './TaskIndicator';
 
 const TaskMasterStatus = () => {
-  const { 
-    currentProject, 
-    projectTaskMaster, 
+  const { t } = useTranslation();
+  const {
+    currentProject,
+    projectTaskMaster,
     mcpServerStatus,
     isLoading,
     isLoadingMCP,
-    error 
+    error
   } = useTaskMaster();
 
   if (isLoading || isLoadingMCP) {
     return (
       <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
         <div className="animate-spin w-3 h-3 border border-gray-300 border-t-blue-500 rounded-full mr-2"></div>
-        Loading TaskMaster status...
+        {t('taskMasterStatus.loadingStatus')}
       </div>
     );
   }
@@ -25,14 +27,14 @@ const TaskMasterStatus = () => {
     return (
       <div className="flex items-center text-sm text-red-500 dark:text-red-400">
         <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
-        TaskMaster Error
+        {t('taskMasterStatus.taskMasterError')}
       </div>
     );
   }
 
   // Show MCP server status
   const mcpConfigured = mcpServerStatus?.hasMCPServer && mcpServerStatus?.isConfigured;
-  
+
   // Show project TaskMaster status
   const projectConfigured = currentProject?.taskmaster?.hasTaskmaster;
   const taskCount = currentProject?.taskmaster?.metadata?.taskCount || 0;
@@ -42,7 +44,7 @@ const TaskMasterStatus = () => {
     return (
       <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
         <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
-        No project selected
+        {t('taskMasterStatus.noProjectSelected')}
       </div>
     );
   }
@@ -60,8 +62,8 @@ const TaskMasterStatus = () => {
   return (
     <div className="flex items-center gap-3">
       {/* TaskMaster Status Indicator */}
-      <TaskIndicator 
-        status={overallStatus} 
+      <TaskIndicator
+        status={overallStatus}
         size="md"
         showLabel={true}
       />
@@ -70,7 +72,7 @@ const TaskMasterStatus = () => {
       {projectConfigured && (
         <div className="text-xs text-gray-600 dark:text-gray-400">
           <span className="font-medium">
-            {completedCount}/{taskCount} tasks
+            {t('taskMasterStatus.tasksLabel', { completed: completedCount, total: taskCount })}
           </span>
           {taskCount > 0 && (
             <span className="ml-2 opacity-75">

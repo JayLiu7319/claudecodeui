@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * CommandMenu - Autocomplete dropdown for slash commands
@@ -12,6 +13,7 @@ import React, { useEffect, useRef } from 'react';
  * @param {Array} frequentCommands - Array of frequently used command objects
  */
 const CommandMenu = ({ commands = [], selectedIndex = -1, onSelect, onClose, position = { top: 0, left: 0 }, isOpen = false, frequentCommands = [] }) => {
+  const { t } = useTranslation();
   const menuRef = useRef(null);
   const selectedItemRef = useRef(null);
 
@@ -103,7 +105,7 @@ const CommandMenu = ({ commands = [], selectedIndex = -1, onSelect, onClose, pos
           textAlign: 'center'
         }}
       >
-        No commands available
+        {t('commands.noCommandsAvailable')}
       </div>
     );
   }
@@ -133,11 +135,11 @@ const CommandMenu = ({ commands = [], selectedIndex = -1, onSelect, onClose, pos
   const orderedNamespaces = namespaceOrder.filter(ns => groupedCommands[ns]);
 
   const namespaceLabels = {
-    frequent: '⭐ Frequently Used',
-    builtin: 'Built-in Commands',
-    project: 'Project Commands',
-    user: 'User Commands',
-    other: 'Other Commands'
+    frequent: t('commands.frequentlyUsed'),
+    builtin: t('commands.builtIn'),
+    project: t('commands.project'),
+    user: t('commands.user'),
+    other: t('commands.other')
   };
 
   // Calculate global index for each command
@@ -157,7 +159,7 @@ const CommandMenu = ({ commands = [], selectedIndex = -1, onSelect, onClose, pos
     <div
       ref={menuRef}
       role="listbox"
-      aria-label="Available commands"
+      aria-label={t('commands.availableCommands')}
       className="command-menu"
       style={{
         ...menuPosition,

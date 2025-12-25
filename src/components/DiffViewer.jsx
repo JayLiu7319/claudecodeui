@@ -1,10 +1,13 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 function DiffViewer({ diff, fileName, isMobile, wrapText }) {
+  const { t } = useTranslation();
+
   if (!diff) {
     return (
       <div className="p-4 text-center text-gray-500 dark:text-gray-400 text-sm">
-        No diff available
+        {t('diffViewer.noDiffAvailable')}
       </div>
     );
   }
@@ -17,14 +20,12 @@ function DiffViewer({ diff, fileName, isMobile, wrapText }) {
     return (
       <div
         key={index}
-        className={`font-mono text-xs p-2 ${
-          isMobile && wrapText ? 'whitespace-pre-wrap break-all' : 'whitespace-pre overflow-x-auto'
-        } ${
-          isAddition ? 'bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300' :
-          isDeletion ? 'bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300' :
-          isHeader ? 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300' :
-          'text-gray-600 dark:text-gray-400'
-        }`}
+        className={`font-mono text-xs p-2 ${isMobile && wrapText ? 'whitespace-pre-wrap break-all' : 'whitespace-pre overflow-x-auto'
+          } ${isAddition ? 'bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300' :
+            isDeletion ? 'bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300' :
+              isHeader ? 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300' :
+                'text-gray-600 dark:text-gray-400'
+          }`}
       >
         {line}
       </div>

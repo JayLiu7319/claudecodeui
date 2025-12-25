@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ScrollArea } from './ui/scroll-area';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -17,6 +18,8 @@ function FileTree({ selectedProject }) {
   const [viewMode, setViewMode] = useState('detailed'); // 'simple', 'detailed', 'compact'
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredFiles, setFilteredFiles] = useState([]);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (selectedProject) {
@@ -81,14 +84,14 @@ function FileTree({ selectedProject }) {
     setLoading(true);
     try {
       const response = await api.getFiles(selectedProject.name);
-      
+
       if (!response.ok) {
         const errorText = await response.text();
         console.error('❌ File fetch failed:', response.status, errorText);
         setFiles([]);
         return;
       }
-      
+
       const data = await response.json();
       setFiles(data);
     } catch (error) {
@@ -130,7 +133,7 @@ function FileTree({ selectedProject }) {
     const now = new Date();
     const past = new Date(date);
     const diffInSeconds = Math.floor((now - past) / 1000);
-    
+
     if (diffInSeconds < 60) return 'just now';
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} min ago`;
     if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
@@ -184,15 +187,15 @@ function FileTree({ selectedProject }) {
             </span>
           </div>
         </Button>
-        
-        {item.type === 'directory' && 
-         expandedDirs.has(item.path) && 
-         item.children && 
-         item.children.length > 0 && (
-          <div>
-            {renderFileTree(item.children, level + 1)}
-          </div>
-        )}
+
+        {item.type === 'directory' &&
+          expandedDirs.has(item.path) &&
+          item.children &&
+          item.children.length > 0 && (
+            <div>
+              {renderFileTree(item.children, level + 1)}
+            </div>
+          )}
       </div>
     ));
   };
@@ -205,11 +208,11 @@ function FileTree({ selectedProject }) {
 
   const getFileIcon = (filename) => {
     const ext = filename.split('.').pop()?.toLowerCase();
-    
+
     const codeExtensions = ['js', 'jsx', 'ts', 'tsx', 'py', 'java', 'cpp', 'c', 'php', 'rb', 'go', 'rs'];
     const docExtensions = ['md', 'txt', 'doc', 'pdf'];
     const imageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'ico', 'bmp'];
-    
+
     if (codeExtensions.includes(ext)) {
       return <FileCode className="w-4 h-4 text-green-500 flex-shrink-0" />;
     } else if (docExtensions.includes(ext)) {
@@ -274,11 +277,11 @@ function FileTree({ selectedProject }) {
             {item.permissionsRwx || '-'}
           </div>
         </div>
-        
-        {item.type === 'directory' && 
-         expandedDirs.has(item.path) && 
-         item.children && 
-         renderDetailedView(item.children, level + 1)}
+
+        {item.type === 'directory' &&
+          expandedDirs.has(item.path) &&
+          item.children &&
+          renderDetailedView(item.children, level + 1)}
       </div>
     ));
   };
@@ -335,11 +338,11 @@ function FileTree({ selectedProject }) {
             )}
           </div>
         </div>
-        
-        {item.type === 'directory' && 
-         expandedDirs.has(item.path) && 
-         item.children && 
-         renderCompactView(item.children, level + 1)}
+
+        {item.type === 'directory' &&
+          expandedDirs.has(item.path) &&
+          item.children &&
+          renderCompactView(item.children, level + 1)}
       </div>
     ));
   };
@@ -348,7 +351,7 @@ function FileTree({ selectedProject }) {
     return (
       <div className="h-full flex items-center justify-center">
         <div className="text-gray-500 dark:text-gray-400">
-          Loading files...
+          {t('fileTree.loadingFiles')}
         </div>
       </div>
     );
@@ -359,14 +362,14 @@ function FileTree({ selectedProject }) {
       {/* Header with Search and View Mode Toggle */}
       <div className="p-4 border-b border-border space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium text-foreground">Files</h3>
+          <h3 className="text-sm font-medium text-foreground">{t('fileTree.title')}</h3>
           <div className="flex gap-1">
             <Button
               variant={viewMode === 'simple' ? 'default' : 'ghost'}
               size="sm"
               className="h-8 w-8 p-0"
               onClick={() => changeViewMode('simple')}
-              title="Simple view"
+              title={t('fileTree.simpleView')}
             >
               <List className="w-4 h-4" />
             </Button>
@@ -375,7 +378,7 @@ function FileTree({ selectedProject }) {
               size="sm"
               className="h-8 w-8 p-0"
               onClick={() => changeViewMode('compact')}
-              title="Compact view"
+              title={t('fileTree.compactView')}
             >
               <Eye className="w-4 h-4" />
             </Button>
@@ -384,7 +387,7 @@ function FileTree({ selectedProject }) {
               size="sm"
               className="h-8 w-8 p-0"
               onClick={() => changeViewMode('detailed')}
-              title="Detailed view"
+              title={t('fileTree.detailedView')}
             >
               <TableProperties className="w-4 h-4" />
             </Button>
@@ -396,7 +399,7 @@ function FileTree({ selectedProject }) {
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Search files and folders..."
+            placeholder={t('fileTree.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-8 pr-8 h-8 text-sm"
@@ -407,7 +410,7 @@ function FileTree({ selectedProject }) {
               size="sm"
               className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-accent"
               onClick={() => setSearchQuery('')}
-              title="Clear search"
+              title={t('fileTree.clearSearch')}
             >
               <X className="w-3 h-3" />
             </Button>
@@ -419,23 +422,23 @@ function FileTree({ selectedProject }) {
       {viewMode === 'detailed' && filteredFiles.length > 0 && (
         <div className="px-4 pt-2 pb-1 border-b border-border">
           <div className="grid grid-cols-12 gap-2 px-2 text-xs font-medium text-muted-foreground">
-            <div className="col-span-5">Name</div>
-            <div className="col-span-2">Size</div>
-            <div className="col-span-3">Modified</div>
-            <div className="col-span-2">Permissions</div>
+            <div className="col-span-5">{t('fileTree.columnName')}</div>
+            <div className="col-span-2">{t('fileTree.columnSize')}</div>
+            <div className="col-span-3">{t('fileTree.columnModified')}</div>
+            <div className="col-span-2">{t('fileTree.columnPermissions')}</div>
           </div>
         </div>
       )}
-      
+
       <ScrollArea className="flex-1 p-4">
         {files.length === 0 ? (
           <div className="text-center py-8">
             <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mx-auto mb-3">
               <Folder className="w-6 h-6 text-muted-foreground" />
             </div>
-            <h4 className="font-medium text-foreground mb-1">No files found</h4>
+            <h4 className="font-medium text-foreground mb-1">{t('fileTree.noFilesFound')}</h4>
             <p className="text-sm text-muted-foreground">
-              Check if the project path is accessible
+              {t('fileTree.checkPath')}
             </p>
           </div>
         ) : filteredFiles.length === 0 && searchQuery ? (
@@ -443,9 +446,9 @@ function FileTree({ selectedProject }) {
             <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mx-auto mb-3">
               <Search className="w-6 h-6 text-muted-foreground" />
             </div>
-            <h4 className="font-medium text-foreground mb-1">No matches found</h4>
+            <h4 className="font-medium text-foreground mb-1">{t('fileTree.noMatchesFound')}</h4>
             <p className="text-sm text-muted-foreground">
-              Try a different search term or clear the search
+              {t('fileTree.tryDifferentSearch')}
             </p>
           </div>
         ) : (
@@ -456,7 +459,7 @@ function FileTree({ selectedProject }) {
           </div>
         )}
       </ScrollArea>
-      
+
       {/* Code Editor Modal */}
       {selectedFile && (
         <CodeEditor
@@ -465,7 +468,7 @@ function FileTree({ selectedProject }) {
           projectPath={selectedFile.projectPath}
         />
       )}
-      
+
       {/* Image Viewer Modal */}
       {selectedImage && (
         <ImageViewer

@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Filter, ArrowUpDown, ArrowUp, ArrowDown, List, Grid, ChevronDown, Columns, Plus, Settings, Terminal, FileText, HelpCircle, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/utils';
 import TaskCard from './TaskCard';
 import CreateTaskModal from './CreateTaskModal';
@@ -7,9 +8,9 @@ import { useTaskMaster } from '../contexts/TaskMasterContext';
 import Shell from './Shell';
 import { api } from '../utils/api';
 
-const TaskList = ({ 
-  tasks = [], 
-  onTaskClick, 
+const TaskList = ({
+  tasks = [],
+  onTaskClick,
   className = '',
   showParentTasks = false,
   defaultView = 'kanban', // 'list', 'grid', or 'kanban'
@@ -31,8 +32,9 @@ const TaskList = ({
   const [showHelpGuide, setShowHelpGuide] = useState(false);
   const [isTaskMasterComplete, setIsTaskMasterComplete] = useState(false);
   const [showPRDDropdown, setShowPRDDropdown] = useState(false);
-  
+
   const { projectTaskMaster, refreshProjects, refreshTasks, setCurrentProject } = useTaskMaster();
+  const { t } = useTranslation();
 
   // Close PRD dropdown when clicking outside
   useEffect(() => {
@@ -63,7 +65,7 @@ const TaskList = ({
     let filtered = tasks.filter(task => {
       // Text search
       const searchLower = searchTerm.toLowerCase();
-      const matchesSearch = !searchTerm || 
+      const matchesSearch = !searchTerm ||
         task.title.toLowerCase().includes(searchLower) ||
         task.description?.toLowerCase().includes(searchLower) ||
         task.id.toString().includes(searchLower);
@@ -80,7 +82,7 @@ const TaskList = ({
     // Sort tasks
     filtered.sort((a, b) => {
       let aVal, bVal;
-      
+
       switch (sortBy) {
         case 'title':
           aVal = a.title.toLowerCase();
@@ -109,10 +111,10 @@ const TaskList = ({
             const parts = id.toString().split('.');
             return parts.map(part => parseInt(part, 10));
           };
-          
+
           const aIds = parseId(a.id);
           const bIds = parseId(b.id);
-          
+
           // Compare each part
           for (let i = 0; i < Math.max(aIds.length, bIds.length); i++) {
             const aId = aIds[i] || 0;
@@ -129,11 +131,11 @@ const TaskList = ({
       if (sortBy === 'updated') {
         return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
       }
-      
+
       if (typeof aVal === 'string') {
         return sortOrder === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
       }
-      
+
       return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
     });
 
@@ -143,45 +145,45 @@ const TaskList = ({
   // Organize tasks by status for Kanban view
   const kanbanColumns = useMemo(() => {
     const allColumns = [
-      { 
-        id: 'pending', 
-        title: '📋 To Do', 
-        status: 'pending', 
+      {
+        id: 'pending',
+        title: `📋 ${t('tasks.toDo')}`,
+        status: 'pending',
         color: 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700',
         headerColor: 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200'
       },
-      { 
-        id: 'in-progress', 
-        title: '🚀 In Progress', 
-        status: 'in-progress', 
+      {
+        id: 'in-progress',
+        title: `🚀 ${t('tasks.inProgress')}`,
+        status: 'in-progress',
         color: 'bg-blue-50 dark:bg-blue-900/50 border-blue-200 dark:border-blue-700',
         headerColor: 'bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200'
       },
-      { 
-        id: 'done', 
-        title: '✅ Done', 
-        status: 'done', 
+      {
+        id: 'done',
+        title: `✅ ${t('tasks.done')}`,
+        status: 'done',
         color: 'bg-emerald-50 dark:bg-emerald-900/50 border-emerald-200 dark:border-emerald-700',
         headerColor: 'bg-emerald-100 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-200'
       },
-      { 
-        id: 'blocked', 
-        title: '🚫 Blocked', 
-        status: 'blocked', 
+      {
+        id: 'blocked',
+        title: `🚫 ${t('tasks.blocked')}`,
+        status: 'blocked',
         color: 'bg-red-50 dark:bg-red-900/50 border-red-200 dark:border-red-700',
         headerColor: 'bg-red-100 dark:bg-red-800 text-red-800 dark:text-red-200'
       },
-      { 
-        id: 'deferred', 
-        title: '⏳ Deferred', 
-        status: 'deferred', 
+      {
+        id: 'deferred',
+        title: `⏳ ${t('tasks.deferred')}`,
+        status: 'deferred',
         color: 'bg-amber-50 dark:bg-amber-900/50 border-amber-200 dark:border-amber-700',
         headerColor: 'bg-amber-100 dark:bg-amber-800 text-amber-800 dark:text-amber-200'
       },
-      { 
-        id: 'cancelled', 
-        title: '❌ Cancelled', 
-        status: 'cancelled', 
+      {
+        id: 'cancelled',
+        title: `❌ ${t('tasks.cancelled')}`,
+        status: 'cancelled',
         color: 'bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-700',
         headerColor: 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
       }
@@ -223,9 +225,9 @@ const TaskList = ({
 
   if (tasks.length === 0) {
     // Check if TaskMaster is configured by looking for .taskmaster directory
-    const hasTaskMasterDirectory = currentProject?.taskMasterConfigured || 
-                                   currentProject?.taskmaster?.hasTaskmaster ||
-                                   projectTaskMaster?.hasTaskmaster;
+    const hasTaskMasterDirectory = currentProject?.taskMasterConfigured ||
+      currentProject?.taskmaster?.hasTaskmaster ||
+      projectTaskMaster?.hasTaskmaster;
 
     return (
       <div className={cn('text-center py-12', className)}>
@@ -236,26 +238,26 @@ const TaskList = ({
               <Settings className="w-12 h-12 mx-auto mb-4" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              TaskMaster AI is not configured
+              {t('tasks.taskMasterNotConfigured')}
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-              TaskMaster helps break down complex projects into manageable tasks with AI-powered assistance
+              {t('tasks.taskMasterDescription')}
             </p>
-            
+
             {/* What is TaskMaster section */}
             <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg text-left">
               <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-3">
-                🎯 What is TaskMaster?
+                🎯 {t('tasks.whatIsTaskMaster')}
               </h4>
               <div className="text-xs text-blue-800 dark:text-blue-200 space-y-1">
-                <p>• <strong>AI-Powered Task Management:</strong> Break complex projects into manageable subtasks</p>
-                <p>• <strong>PRD Templates:</strong> Generate tasks from Product Requirements Documents</p>
-                <p>• <strong>Dependency Tracking:</strong> Understand task relationships and execution order</p>
-                <p>• <strong>Progress Visualization:</strong> Kanban boards and detailed task analytics</p>
-                <p>• <strong>CLI Integration:</strong> Use taskmaster commands for advanced workflows</p>
+                <p>• <strong>{t('tasks.aiPoweredManagement')}</strong> {t('tasks.aiPoweredDesc')}</p>
+                <p>• <strong>{t('tasks.prdTemplates')}</strong> {t('tasks.prdTemplatesDesc')}</p>
+                <p>• <strong>{t('tasks.dependencyTracking')}</strong> {t('tasks.dependencyDesc')}</p>
+                <p>• <strong>{t('tasks.progressVisualization')}</strong> {t('tasks.progressDesc')}</p>
+                <p>• <strong>{t('tasks.cliIntegration')}</strong> {t('tasks.cliDesc')}</p>
               </div>
             </div>
-            
+
             <button
               onClick={() => {
                 setIsTaskMasterComplete(false); // Reset completion state
@@ -264,7 +266,7 @@ const TaskList = ({
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 mx-auto"
             >
               <Terminal className="w-4 h-4" />
-              Initialize TaskMaster AI
+              {t('tasks.initializeTaskMaster')}
             </button>
           </div>
         ) : (
@@ -276,19 +278,19 @@ const TaskList = ({
                   <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Getting Started with TaskMaster</h2>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">TaskMaster is initialized! Here's what to do next:</p>
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('tasks.gettingStartedTitle')}</h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{t('tasks.gettingStartedSubtitle')}</p>
                 </div>
               </div>
-              
+
               <div className="space-y-4 text-left">
                 <div className="grid gap-3">
                   {/* Step 1 */}
                   <div className="flex gap-3 p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-blue-100 dark:border-blue-800/50">
                     <div className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white text-xs font-semibold rounded-full flex items-center justify-center">1</div>
                     <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-1">Create a Product Requirements Document (PRD)</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Discuss your project idea and create a PRD that describes what you want to build.</p>
+                      <h4 className="font-medium text-gray-900 dark:text-white mb-1">{t('tasks.step1Title')}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{t('tasks.step1Desc')}</p>
                       <button
                         onClick={() => {
                           onShowPRDEditor?.();
@@ -296,13 +298,13 @@ const TaskList = ({
                         className="inline-flex items-center gap-1 text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-2 py-1 rounded hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
                       >
                         <FileText className="w-3 h-3" />
-                        Add PRD
+                        {t('tasks.addPRD')}
                       </button>
-                      
+
                       {/* Show existing PRDs if any */}
                       {existingPRDs.length > 0 && (
                         <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Existing PRDs:</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t('tasks.existingPRDs')}</p>
                           <div className="flex flex-wrap gap-2">
                             {existingPRDs.map((prd) => (
                               <button
@@ -341,8 +343,8 @@ const TaskList = ({
                   <div className="flex gap-3 p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-blue-100 dark:border-blue-800/50">
                     <div className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white text-xs font-semibold rounded-full flex items-center justify-center">2</div>
                     <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-1">Generate Tasks from PRD</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Once you have a PRD, ask your AI assistant to parse it and TaskMaster will automatically break it down into manageable tasks with implementation details.</p>
+                      <h4 className="font-medium text-gray-900 dark:text-white mb-1">{t('tasks.step2Title')}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{t('tasks.step2Desc')}</p>
                     </div>
                   </div>
 
@@ -350,8 +352,8 @@ const TaskList = ({
                   <div className="flex gap-3 p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-blue-100 dark:border-blue-800/50">
                     <div className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white text-xs font-semibold rounded-full flex items-center justify-center">3</div>
                     <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-1">Analyze & Expand Tasks</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Ask your AI assistant to analyze task complexity and expand them into detailed subtasks for easier implementation.</p>
+                      <h4 className="font-medium text-gray-900 dark:text-white mb-1">{t('tasks.step3Title')}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{t('tasks.step3Desc')}</p>
                     </div>
                   </div>
 
@@ -359,8 +361,8 @@ const TaskList = ({
                   <div className="flex gap-3 p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-blue-100 dark:border-blue-800/50">
                     <div className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white text-xs font-semibold rounded-full flex items-center justify-center">4</div>
                     <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-1">Start Building</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Ask your AI assistant to begin working on tasks, update their status, and add new tasks as your project evolves.</p>
+                      <h4 className="font-medium text-gray-900 dark:text-white mb-1">{t('tasks.step4Title')}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{t('tasks.step4Desc')}</p>
                     </div>
                   </div>
                 </div>
@@ -376,7 +378,7 @@ const TaskList = ({
                     style={{ zIndex: 10 }}
                   >
                     <FileText className="w-4 h-4" />
-                    Add PRD
+                    {t('tasks.addPRD')}
                   </button>
                 </div>
               </div>
@@ -384,12 +386,12 @@ const TaskList = ({
 
             <div className="text-center">
               <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                💡 <strong>Tip:</strong> Start with a PRD to get the most out of TaskMaster's AI-powered task generation
+                💡 <strong>{t('common.tip')}:</strong> {t('tasks.prdTip')}
               </div>
             </div>
           </div>
         )}
-        
+
         {/* TaskMaster CLI Setup Modal */}
         {showCLI && (
           <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 bg-black/50 backdrop-blur-sm">
@@ -401,8 +403,8 @@ const TaskList = ({
                     <Terminal className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">TaskMaster Setup</h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Interactive CLI for {currentProject?.displayName}</p>
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('tasks.taskMasterSetup')}</h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('tasks.interactiveCLI', { project: currentProject?.displayName })}</p>
                   </div>
                 </div>
                 <button
@@ -422,11 +424,11 @@ const TaskList = ({
                   <Plus className="w-5 h-5 rotate-45" />
                 </button>
               </div>
-              
+
               {/* Terminal Container */}
               <div className="flex-1 p-4">
-                <div 
-                  className="h-full bg-black rounded-lg overflow-hidden" 
+                <div
+                  className="h-full bg-black rounded-lg overflow-hidden"
                   onClick={(e) => {
                     // Focus the terminal when clicked
                     const terminalElement = e.currentTarget.querySelector('.xterm-screen');
@@ -435,7 +437,7 @@ const TaskList = ({
                     }
                   }}
                 >
-                  <Shell 
+                  <Shell
                     selectedProject={currentProject}
                     selectedSession={null}
                     isActive={true}
@@ -456,7 +458,7 @@ const TaskList = ({
                   />
                 </div>
               </div>
-              
+
               {/* Modal Footer */}
               <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
                 <div className="flex items-center justify-between">
@@ -464,10 +466,10 @@ const TaskList = ({
                     {isTaskMasterComplete ? (
                       <span className="flex items-center gap-2 text-green-600 dark:text-green-400">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        TaskMaster setup completed! You can now close this window.
+                        {t('tasks.setupCompleted')}
                       </span>
                     ) : (
-                      "TaskMaster initialization will start automatically"
+                      t('tasks.initAutoStart')
                     )}
                   </div>
                   <button
@@ -485,12 +487,12 @@ const TaskList = ({
                     }}
                     className={cn(
                       "px-4 py-2 text-sm font-medium rounded-md transition-colors",
-                      isTaskMasterComplete 
-                        ? "bg-green-600 hover:bg-green-700 text-white" 
+                      isTaskMasterComplete
+                        ? "bg-green-600 hover:bg-green-700 text-white"
                         : "text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
                     )}
                   >
-                    {isTaskMasterComplete ? "Close & Continue" : "Close"}
+                    {isTaskMasterComplete ? t('tasks.closeContinue') : t('common.close')}
                   </button>
                 </div>
               </div>
@@ -510,7 +512,7 @@ const TaskList = ({
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
             type="text"
-            placeholder="Search tasks..."
+            placeholder={t('tasks.searchTasks')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -525,11 +527,11 @@ const TaskList = ({
               onClick={() => setViewMode('kanban')}
               className={cn(
                 'p-2 rounded-md transition-colors',
-                viewMode === 'kanban' 
-                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' 
+                viewMode === 'kanban'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
               )}
-              title="Kanban view"
+              title={t('tasks.kanbanView')}
             >
               <Columns className="w-4 h-4" />
             </button>
@@ -537,11 +539,11 @@ const TaskList = ({
               onClick={() => setViewMode('list')}
               className={cn(
                 'p-2 rounded-md transition-colors',
-                viewMode === 'list' 
-                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' 
+                viewMode === 'list'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
               )}
-              title="List view"
+              title={t('tasks.listView')}
             >
               <List className="w-4 h-4" />
             </button>
@@ -549,11 +551,11 @@ const TaskList = ({
               onClick={() => setViewMode('grid')}
               className={cn(
                 'p-2 rounded-md transition-colors',
-                viewMode === 'grid' 
-                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' 
+                viewMode === 'grid'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
               )}
-              title="Grid view"
+              title={t('tasks.gridView')}
             >
               <Grid className="w-4 h-4" />
             </button>
@@ -564,16 +566,16 @@ const TaskList = ({
             onClick={() => setShowFilters(!showFilters)}
             className={cn(
               'flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors',
-              showFilters 
-                ? 'bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300' 
+              showFilters
+                ? 'bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300'
                 : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
             )}
           >
             <Filter className="w-4 h-4" />
-            <span className="hidden sm:inline">Filters</span>
+            <span className="hidden sm:inline">{t('tasks.filters')}</span>
             <ChevronDown className={cn('w-4 h-4 transition-transform', showFilters && 'rotate-180')} />
           </button>
-          
+
           {/* Action Buttons */}
           {currentProject && (
             <>
@@ -581,7 +583,7 @@ const TaskList = ({
               <button
                 onClick={() => setShowHelpGuide(true)}
                 className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors border border-gray-300 dark:border-gray-600"
-                title="TaskMaster Getting Started Guide"
+                title={t('tasks.helpGuide')}
               >
                 <HelpCircle className="w-4 h-4" />
               </button>
@@ -597,13 +599,13 @@ const TaskList = ({
                       title={`${existingPRDs.length} PRD${existingPRDs.length > 1 ? 's' : ''} available`}
                     >
                       <FileText className="w-4 h-4" />
-                      <span className="hidden sm:inline">PRDs</span>
+                      <span className="hidden sm:inline">{t('tasks.prds')}</span>
                       <span className="px-1.5 py-0.5 text-xs bg-purple-500 rounded-full min-w-[1.25rem] text-center">
                         {existingPRDs.length}
                       </span>
                       <ChevronDown className={cn('w-3 h-3 transition-transform hidden sm:block', showPRDDropdown && 'rotate-180')} />
                     </button>
-                    
+
                     {showPRDDropdown && (
                       <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-30">
                         <div className="p-2">
@@ -615,10 +617,10 @@ const TaskList = ({
                             className="w-full text-left px-3 py-2 text-sm font-medium text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded flex items-center gap-2"
                           >
                             <Plus className="w-4 h-4" />
-                            Create New PRD
+                            {t('tasks.createNewPRD')}
                           </button>
                           <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400 px-3 py-1 font-medium">Existing PRDs:</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400 px-3 py-1 font-medium">{t('tasks.existingPRDs')}</div>
                           {existingPRDs.map((prd) => (
                             <button
                               key={prd.name}
@@ -659,11 +661,11 @@ const TaskList = ({
                     title="Create Product Requirements Document"
                   >
                     <FileText className="w-4 h-4" />
-                    <span className="hidden sm:inline">Add PRD</span>
+                    <span className="hidden sm:inline">{t('tasks.addPRD')}</span>
                   </button>
                 )}
               </div>
-              
+
               {/* Add Task Button */}
               {((currentProject?.taskMasterConfigured || currentProject?.taskmaster?.hasTaskmaster || projectTaskMaster?.hasTaskmaster) || tasks.length > 0) && (
                 <button
@@ -672,7 +674,7 @@ const TaskList = ({
                   title="Add a new task"
                 >
                   <Plus className="w-4 h-4" />
-                  <span className="hidden sm:inline">Add Task</span>
+                  <span className="hidden sm:inline">{t('tasks.addTask')}</span>
                 </button>
               )}
             </>
@@ -687,14 +689,14 @@ const TaskList = ({
             {/* Status Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Status
+                {t('tasks.status')}
               </label>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
               >
-                <option value="all">All Statuses</option>
+                <option value="all">{t('tasks.allStatuses')}</option>
                 {statuses.map(status => (
                   <option key={status} value={status}>
                     {status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' ')}
@@ -706,14 +708,14 @@ const TaskList = ({
             {/* Priority Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Priority
+                {t('tasks.priority')}
               </label>
               <select
                 value={priorityFilter}
                 onChange={(e) => setPriorityFilter(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
               >
-                <option value="all">All Priorities</option>
+                <option value="all">{t('tasks.allPriorities')}</option>
                 {priorities.map(priority => (
                   <option key={priority} value={priority}>
                     {priority.charAt(0).toUpperCase() + priority.slice(1)}
@@ -725,7 +727,7 @@ const TaskList = ({
             {/* Sort By */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Sort By
+                {t('tasks.sortBy')}
               </label>
               <select
                 value={`${sortBy}-${sortOrder}`}
@@ -736,14 +738,14 @@ const TaskList = ({
                 }}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
               >
-                <option value="id-asc">ID (Ascending)</option>
-                <option value="id-desc">ID (Descending)</option>
-                <option value="title-asc">Title (A-Z)</option>
-                <option value="title-desc">Title (Z-A)</option>
-                <option value="status-asc">Status (Pending First)</option>
-                <option value="status-desc">Status (Done First)</option>
-                <option value="priority-asc">Priority (High First)</option>
-                <option value="priority-desc">Priority (Low First)</option>
+                <option value="id-asc">{t('tasks.idAsc')}</option>
+                <option value="id-desc">{t('tasks.idDesc')}</option>
+                <option value="title-asc">{t('tasks.titleAZ')}</option>
+                <option value="title-desc">{t('tasks.titleZA')}</option>
+                <option value="status-asc">{t('tasks.statusPending')}</option>
+                <option value="status-desc">{t('tasks.statusDone')}</option>
+                <option value="priority-asc">{t('tasks.priorityHigh')}</option>
+                <option value="priority-desc">{t('tasks.priorityLow')}</option>
               </select>
             </div>
           </div>
@@ -751,13 +753,13 @@ const TaskList = ({
           {/* Filter Actions */}
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              Showing {filteredAndSortedTasks.length} of {tasks.length} tasks
+              {t('common.showing', { count: filteredAndSortedTasks.length, total: tasks.length })} {t('tasks.title').toLowerCase()}
             </div>
             <button
               onClick={clearFilters}
               className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
             >
-              Clear Filters
+              {t('common.clearFilters')}
             </button>
           </div>
         </div>
@@ -769,8 +771,8 @@ const TaskList = ({
           onClick={() => handleSortChange('id')}
           className={cn(
             'flex items-center gap-1 px-3 py-1.5 rounded-md text-sm transition-colors',
-            sortBy === 'id' 
-              ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
+            sortBy === 'id'
+              ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
               : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
           )}
         >
@@ -780,8 +782,8 @@ const TaskList = ({
           onClick={() => handleSortChange('status')}
           className={cn(
             'flex items-center gap-1 px-3 py-1.5 rounded-md text-sm transition-colors',
-            sortBy === 'status' 
-              ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
+            sortBy === 'status'
+              ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
               : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
           )}
         >
@@ -791,8 +793,8 @@ const TaskList = ({
           onClick={() => handleSortChange('priority')}
           className={cn(
             'flex items-center gap-1 px-3 py-1.5 rounded-md text-sm transition-colors',
-            sortBy === 'priority' 
-              ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
+            sortBy === 'priority'
+              ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
               : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
           )}
         >
@@ -812,7 +814,7 @@ const TaskList = ({
       ) : viewMode === 'kanban' ? (
         /* Kanban Board Layout - Dynamic grid based on column count */
         <div className={cn(
-          "grid gap-6", 
+          "grid gap-6",
           kanbanColumns.length === 1 && "grid-cols-1 max-w-md mx-auto",
           kanbanColumns.length === 2 && "grid-cols-1 md:grid-cols-2",
           kanbanColumns.length === 3 && "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
@@ -835,7 +837,7 @@ const TaskList = ({
                   </div>
                 </div>
               </div>
-              
+
               {/* Column Tasks */}
               <div className="p-3 space-y-3 min-h-[200px] max-h-[calc(100vh-300px)] overflow-y-auto">
                 {column.tasks.length === 0 ? (
@@ -848,9 +850,9 @@ const TaskList = ({
                     </div>
                     <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                       {column.status === 'pending' ? 'Tasks will appear here' :
-                       column.status === 'in-progress' ? 'Move tasks here when started' :
-                       column.status === 'done' ? 'Completed tasks appear here' :
-                       'Tasks with this status will appear here'}
+                        column.status === 'in-progress' ? 'Move tasks here when started' :
+                          column.status === 'done' ? 'Completed tasks appear here' :
+                            'Tasks with this status will appear here'}
                     </div>
                   </div>
                 ) : (
@@ -872,8 +874,8 @@ const TaskList = ({
       ) : (
         <div className={cn(
           'gap-4',
-          viewMode === 'grid' 
-            ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3' 
+          viewMode === 'grid'
+            ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
             : 'space-y-4'
         )}>
           {filteredAndSortedTasks.map((task) => (
@@ -887,7 +889,7 @@ const TaskList = ({
           ))}
         </div>
       )}
-      
+
       {/* Create Task Modal */}
       {showCreateModal && (
         <CreateTaskModal
@@ -899,7 +901,7 @@ const TaskList = ({
           }}
         />
       )}
-      
+
       {/* Help Guide Modal */}
       {showHelpGuide && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -922,7 +924,7 @@ const TaskList = ({
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             {/* Modal Content */}
             <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
               <div className="space-y-4">
@@ -1027,9 +1029,9 @@ const TaskList = ({
                   <p className="text-sm text-blue-800 dark:text-blue-200 mb-3">
                     TaskMaster AI is an advanced task management system built for developers. Get documentation, examples, and contribute to the project.
                   </p>
-                  <a 
-                    href="https://github.com/eyaltoledano/claude-task-master" 
-                    target="_blank" 
+                  <a
+                    href="https://github.com/eyaltoledano/claude-task-master"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium transition-colors"
                   >

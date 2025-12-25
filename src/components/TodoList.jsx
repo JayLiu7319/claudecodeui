@@ -1,8 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Badge } from './ui/badge';
 import { CheckCircle2, Clock, Circle } from 'lucide-react';
 
 const TodoList = ({ todos, isResult = false }) => {
+  const { t } = useTranslation();
+
   if (!todos || !Array.isArray(todos)) {
     return null;
   }
@@ -43,14 +46,40 @@ const TodoList = ({ todos, isResult = false }) => {
     }
   };
 
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'completed':
+        return t('todoList.completed');
+      case 'in_progress':
+        return t('todoList.inProgress');
+      case 'pending':
+      default:
+        return t('todoList.pending');
+    }
+  };
+
+  const getPriorityLabel = (priority) => {
+    switch (priority) {
+      case 'high':
+        return t('todoList.high');
+      case 'medium':
+        return t('todoList.medium');
+      case 'low':
+      default:
+        return t('todoList.low');
+    }
+  };
+
   return (
     <div className="space-y-3">
       {isResult && (
         <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-          Todo List ({todos.length} {todos.length === 1 ? 'item' : 'items'})
+          {todos.length === 1
+            ? t('todoList.todoListTitle', { count: todos.length })
+            : t('todoList.todoListTitlePlural', { count: todos.length })}
         </div>
       )}
-      
+
       {todos.map((todo, index) => (
         <div
           key={todo.id || `todo-${index}`}
@@ -59,25 +88,25 @@ const TodoList = ({ todos, isResult = false }) => {
           <div className="flex-shrink-0 mt-0.5">
             {getStatusIcon(todo.status)}
           </div>
-          
+
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2 mb-2">
               <p className={`text-sm font-medium ${todo.status === 'completed' ? 'line-through text-gray-500 dark:text-gray-400' : 'text-gray-900 dark:text-gray-100'}`}>
                 {todo.content}
               </p>
-              
+
               <div className="flex gap-1 flex-shrink-0">
                 <Badge
                   variant="outline"
                   className={`text-xs px-2 py-0.5 ${getPriorityColor(todo.priority)}`}
                 >
-                  {todo.priority}
+                  {getPriorityLabel(todo.priority)}
                 </Badge>
                 <Badge
                   variant="outline"
                   className={`text-xs px-2 py-0.5 ${getStatusColor(todo.status)}`}
                 >
-                  {todo.status.replace('_', ' ')}
+                  {getStatusLabel(todo.status)}
                 </Badge>
               </div>
             </div>

@@ -1,4 +1,5 @@
 import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import StandaloneShell from './StandaloneShell';
 
 /**
@@ -20,6 +21,8 @@ function LoginModal({
   onComplete,
   customCommand
 }) {
+  const { t } = useTranslation();
+
   if (!isOpen) return null;
 
   const getCommand = () => {
@@ -38,11 +41,11 @@ function LoginModal({
   const getTitle = () => {
     switch (provider) {
       case 'claude':
-        return 'Claude CLI Login';
+        return t('loginModal.claudeCliLogin');
       case 'cursor':
-        return 'Cursor CLI Login';
+        return t('loginModal.cursorCliLogin');
       default:
-        return 'CLI Login';
+        return t('loginModal.cliLogin');
     }
   };
 
@@ -65,7 +68,7 @@ function LoginModal({
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-            aria-label="Close login modal"
+            aria-label={t('loginModal.closeLoginModal')}
           >
             <X className="w-6 h-6" />
           </button>

@@ -4,10 +4,11 @@ import { cn } from '../lib/utils';
 import TaskIndicator from './TaskIndicator';
 import { api } from '../utils/api';
 import { useTaskMaster } from '../contexts/TaskMasterContext';
+import { useTranslation } from 'react-i18next';
 
-const TaskDetail = ({ 
-  task, 
-  onClose, 
+const TaskDetail = ({
+  task,
+  onClose,
   onEdit,
   onStatusChange,
   onTaskClick,
@@ -20,12 +21,13 @@ const TaskDetail = ({
   const [showDetails, setShowDetails] = useState(false);
   const [showTestStrategy, setShowTestStrategy] = useState(false);
   const { currentProject, refreshTasks } = useTaskMaster();
+  const { t } = useTranslation();
 
   if (!isOpen || !task) return null;
 
   const handleSave = async () => {
     if (!currentProject) return;
-    
+
     setIsSaving(true);
     try {
       // Only include changed fields
@@ -33,10 +35,10 @@ const TaskDetail = ({
       if (editedTask.title !== task.title) updates.title = editedTask.title;
       if (editedTask.description !== task.description) updates.description = editedTask.description;
       if (editedTask.details !== task.details) updates.details = editedTask.details;
-      
+
       if (Object.keys(updates).length > 0) {
         const response = await api.taskmaster.updateTask(currentProject.name, task.id, updates);
-        
+
         if (response.ok) {
           // Refresh tasks to get updated data
           refreshTasks?.();
@@ -45,14 +47,14 @@ const TaskDetail = ({
         } else {
           const error = await response.json();
           console.error('Failed to update task:', error);
-          alert(`Failed to update task: ${error.message}`);
+          alert(t('tasks.updateFailed', { message: error.message }));
         }
       } else {
         setEditMode(false);
       }
     } catch (error) {
       console.error('Error updating task:', error);
-      alert('Error updating task. Please try again.');
+      alert(t('tasks.updateError'));
     } finally {
       setIsSaving(false);
     }
@@ -60,21 +62,21 @@ const TaskDetail = ({
 
   const handleStatusChange = async (newStatus) => {
     if (!currentProject) return;
-    
+
     try {
       const response = await api.taskmaster.updateTask(currentProject.name, task.id, { status: newStatus });
-      
+
       if (response.ok) {
         refreshTasks?.();
         onStatusChange?.(task.id, newStatus);
       } else {
         const error = await response.json();
         console.error('Failed to update task status:', error);
-        alert(`Failed to update task status: ${error.message}`);
+        alert(t('tasks.updateStatusFailed', { message: error.message }));
       }
     } catch (error) {
       console.error('Error updating task status:', error);
-      alert('Error updating task status. Please try again.');
+      alert(t('tasks.updateStatusError'));
     }
   };
 
@@ -113,12 +115,12 @@ const TaskDetail = ({
   };
 
   const statusOptions = [
-    { value: 'pending', label: 'Pending' },
-    { value: 'in-progress', label: 'In Progress' },
-    { value: 'review', label: 'Review' },
-    { value: 'done', label: 'Done' },
-    { value: 'deferred', label: 'Deferred' },
-    { value: 'cancelled', label: 'Cancelled' }
+    { value: 'pending', label: t('tasks.pending') },
+    { value: 'in-progress', label: t('tasks.inProgress') },
+    { value: 'review', label: t('tasks.review') },
+    { value: 'done', label: t('tasks.done') },
+    { value: 'deferred', label: t('tasks.deferred') },
+    { value: 'cancelled', label: t('tasks.cancelled') }
   ];
 
   return (
@@ -137,14 +139,14 @@ const TaskDetail = ({
                 <button
                   onClick={copyTaskId}
                   className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                  title="Click to copy task ID"
+                  title={t('tasks.clickToCopyId')}
                 >
-                  <span>Task {task.id}</span>
+                  <span>{t('tasks.task', { id: task.id })}</span>
                   <Copy className="w-3 h-3" />
                 </button>
                 {task.parentId && (
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Subtask of Task {task.parentId}
+                    {t('tasks.subtaskOf', { id: task.parentId })}
                   </span>
                 )}
               </div>
@@ -154,7 +156,7 @@ const TaskDetail = ({
                   value={editedTask.title || ''}
                   onChange={(e) => setEditedTask({ ...editedTask, title: e.target.value })}
                   className="w-full text-lg font-semibold bg-transparent border-b-2 border-blue-500 focus:outline-none text-gray-900 dark:text-white"
-                  placeholder="Task title"
+                  placeholder={t('tasks.taskTitle')}
                 />
               ) : (
                 <h1 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white line-clamp-2">
@@ -163,7 +165,7 @@ const TaskDetail = ({
               )}
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2 flex-shrink-0">
             {editMode ? (
               <>
@@ -171,7 +173,7 @@ const TaskDetail = ({
                   onClick={handleSave}
                   disabled={isSaving}
                   className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  title={isSaving ? "Saving..." : "Save changes"}
+                  title={isSaving ? t('tasks.saving') : t('tasks.saveChanges')}
                 >
                   <Save className={cn("w-5 h-5", isSaving && "animate-spin")} />
                 </button>
@@ -182,7 +184,7 @@ const TaskDetail = ({
                   }}
                   disabled={isSaving}
                   className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  title="Cancel editing"
+                  title={t('tasks.cancelEditing')}
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -191,16 +193,16 @@ const TaskDetail = ({
               <button
                 onClick={() => setEditMode(true)}
                 className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
-                title="Edit task"
+                title={t('tasks.editTask')}
               >
                 <Edit className="w-5 h-5" />
               </button>
             )}
-            
+
             <button
               onClick={onClose}
               className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
-              title="Close"
+              title={t('tasks.close')}
             >
               <X className="w-5 h-5" />
             </button>
@@ -213,7 +215,7 @@ const TaskDetail = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Status */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('tasks.statusLabel')}</label>
               <div className={cn(
                 'w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600',
                 statusConfig.bg,
@@ -230,28 +232,28 @@ const TaskDetail = ({
 
             {/* Priority */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Priority</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('tasks.priorityLabel')}</label>
               <div className={cn(
                 'px-3 py-2 rounded-md text-sm font-medium capitalize',
                 getPriorityColor(task.priority)
               )}>
                 <Flag className="w-4 h-4 inline mr-2" />
-                {task.priority || 'Not set'}
+                {task.priority || t('tasks.notSet')}
               </div>
             </div>
 
             {/* Dependencies */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Dependencies</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('tasks.dependencies')}</label>
               {task.dependencies && task.dependencies.length > 0 ? (
                 <div className="flex flex-wrap gap-1">
                   {task.dependencies.map(depId => (
-                    <button 
-                      key={depId} 
+                    <button
+                      key={depId}
                       onClick={() => onTaskClick && onTaskClick({ id: depId })}
                       className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded text-sm hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors cursor-pointer disabled:cursor-default disabled:opacity-50"
                       disabled={!onTaskClick}
-                      title={onTaskClick ? `Click to view Task ${depId}` : `Task ${depId}`}
+                      title={onTaskClick ? t('tasks.clickToViewTask', { id: depId }) : t('tasks.task', { id: depId })}
                     >
                       <ArrowRight className="w-3 h-3 inline mr-1" />
                       {depId}
@@ -259,25 +261,25 @@ const TaskDetail = ({
                   ))}
                 </div>
               ) : (
-                <span className="text-gray-500 dark:text-gray-400 text-sm">No dependencies</span>
+                <span className="text-gray-500 dark:text-gray-400 text-sm">{t('tasks.noDependencies')}</span>
               )}
             </div>
           </div>
 
           {/* Description */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('tasks.description')}</label>
             {editMode ? (
               <textarea
                 value={editedTask.description || ''}
                 onChange={(e) => setEditedTask({ ...editedTask, description: e.target.value })}
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                placeholder="Task description"
+                placeholder={t('tasks.taskDescription')}
               />
             ) : (
               <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                {task.description || 'No description provided'}
+                {task.description || t('tasks.noDescription')}
               </p>
             )}
           </div>
@@ -290,7 +292,7 @@ const TaskDetail = ({
                 className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Implementation Details
+                  {t('tasks.implementationDetails')}
                 </span>
                 {showDetails ? (
                   <ChevronDown className="w-4 h-4 text-gray-500" />
@@ -306,7 +308,7 @@ const TaskDetail = ({
                       onChange={(e) => setEditedTask({ ...editedTask, details: e.target.value })}
                       rows={4}
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                      placeholder="Implementation details"
+                      placeholder={t('tasks.implementationDetails')}
                     />
                   ) : (
                     <div className="bg-gray-50 dark:bg-gray-800 rounded-md p-4">
@@ -328,7 +330,7 @@ const TaskDetail = ({
                 className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Test Strategy
+                  {t('tasks.testStrategy')}
                 </span>
                 {showTestStrategy ? (
                   <ChevronDown className="w-4 h-4 text-gray-500" />
@@ -352,7 +354,7 @@ const TaskDetail = ({
           {task.subtasks && task.subtasks.length > 0 && (
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Subtasks ({task.subtasks.length})
+                {t('tasks.subtasksCount', { count: task.subtasks.length })}
               </label>
               <div className="space-y-2">
                 {task.subtasks.map(subtask => {
@@ -386,15 +388,15 @@ const TaskDetail = ({
         {/* Footer */}
         <div className="flex items-center justify-between p-4 md:p-6 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            Task ID: {task.id}
+            {t('tasks.taskId', { id: task.id })}
           </div>
-          
+
           <div className="flex items-center gap-2">
             <button
               onClick={onClose}
               className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md transition-colors"
             >
-              Close
+              {t('tasks.close')}
             </button>
           </div>
         </div>

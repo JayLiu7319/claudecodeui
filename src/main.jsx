@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 import 'katex/dist/katex.min.css'
+import './i18n' // Initialize i18n for internationalization
 
 // Clean up stale service workers on app load to prevent caching issues after builds
 if ('serviceWorker' in navigator) {
